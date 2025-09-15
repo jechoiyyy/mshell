@@ -6,11 +6,12 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/28 19:57:07 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/15 18:06:42 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:52:48 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
+#include <sys/stat.h>
 
 char	*get_path_env(t_shell *shell)
 {
@@ -90,6 +91,8 @@ char    *find_executable(char *command, t_shell *shell)
 {
     char    *path_env;
     char    *executable;
+	struct stat		st;
+
     if (!command)
         return (NULL);
     // 경로 포함된 명령어 처리 (./a.sh, /bin/ls 등)
@@ -101,8 +104,14 @@ char    *find_executable(char *command, t_shell *shell)
             g_exit_status = 127;
             return (NULL);
         }
-        if (access(command, X_OK) != 0)
+        if (access(command, X_OK) == 0)
         {
+            if (stat(command, &st) == 0 && S_ISDIR(st.st_mode))
+            {
+                print_error(command, "Is a directory");
+                g_exit_status = 126;
+                return (NULL);
+            }
             print_error(command, "Permission denied");
             g_exit_status = 126;
             return (NULL);

@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 20:12:54 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/15 17:27:57 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:29:16 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	ft_exit(t_cmd *cmd, t_shell *shell)
 
 	printf("exit\n");
 	if (!cmd->args[1])
-		code = g_exit_status;
+		code = 0;
 	else if (!is_numeric(cmd->args[1]))
 	{
 		print_error("exit", "numeric argument required");

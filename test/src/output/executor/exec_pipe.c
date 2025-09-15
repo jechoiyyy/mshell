@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 19:57:14 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/15 18:24:03 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:19:01 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ static int	single_cmd(t_cmd *commands, t_shell *shell)
 		restore_stdio(&saved_stdin, &saved_stdout);
 		return (g_exit_status);
 	}
-	if (!commands->args && commands->hd > 0)
+	if (!commands->args)
 	{
     	g_exit_status = 0;
 		restore_stdio(&saved_stdin, &saved_stdout);
@@ -195,10 +195,9 @@ int	execute_pipeline(t_cmd *commands, t_shell *shell)
 
 	if (!commands || !shell)
 		return (FAILURE);
-	
 	cmd_count = count_commands(commands);
 
-	if (cmd_count == 1 && ((commands->args && is_builtin_command(commands->args[0])) || (commands->hd > 0 && !commands->args)))
+	if (cmd_count == 1 && ((commands->args && is_builtin_command(commands->args[0])) || !commands->args))
     	return (single_cmd(commands, shell));
 	// 파이프 생성
 	if (create_pipes(&pipe_fds, cmd_count) == FAILURE)
@@ -215,7 +214,6 @@ int	execute_pipeline(t_cmd *commands, t_shell *shell)
 		}
 		return (FAILURE);
 	}
-	
 	// 각 명령어를 포크하여 실행
 	current = commands;
 	i = 0;
@@ -236,9 +234,8 @@ int	execute_pipeline(t_cmd *commands, t_shell *shell)
 	// 부모 프로세스에서 모든 파이프 닫기
 	close_all_pipes(pipe_fds, cmd_count - 1);  // 헤더의 함수 사용
 	// 모든 자식 프로세스 종료 대기
-	shell->last_exit_status = wait_for_children(pids, cmd_count);
+	g_exit_status = wait_for_children(pids, cmd_count);
 	// 리소스 정리
 	cleanup_resources(pipe_fds, pids, cmd_count);
-	
 	return (SUCCESS);
 }

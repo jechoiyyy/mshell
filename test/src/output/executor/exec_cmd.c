@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 19:58:34 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/15 18:09:08 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:52:52 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,34 @@ int	execute_builtin(t_cmd *cmd, t_shell *shell)
 int execute_external(t_cmd *cmd, t_shell *shell)
 {
     char    *executable_path;
+	int		child_pid;
+	int		status;
 
     if (!cmd || !cmd->args || !cmd->args[0])
-        return (g_exit_status);
+        return (127);
     executable_path = find_executable(cmd->args[0], shell);
     if (!executable_path)
-        return (g_exit_status);
-    if (execve(executable_path, cmd->args, shell->env_array) == -1)
-    {
-        print_error(cmd->args[0], strerror(errno));
-        free(executable_path);
-        return (126);
-    }
-    free(executable_path);
-	return (g_exit_status);
+		return (g_exit_status);
+	child_pid = fork();
+	if (child_pid == -1)
+		return (perror("fork"), free(executable_path), 1);
+	if (child_pid == 0)
+	{
+		if (execve(executable_path, cmd->args, shell->env_array) == -1)
+		{
+			print_error(cmd->args[0], strerror(errno));
+			free(executable_path);
+			exit(126);
+		}
+	}
+	else
+	{
+		free(executable_path);
+		waitpid(child_pid, &status, 0);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		else if (WIFSIGNALED(status))
+			return (128 + WTERMSIG(status));
+	}
+	return (0);
 }

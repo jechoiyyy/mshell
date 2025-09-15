@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:31:12 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/12 23:02:53 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:13:44 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ t_cmd	*parse_pipeline(t_token **current, t_prompt *prompt)
 		*current = (*current)->next;
 		if (!*current)
 		{
-			printf("minishell: syntax error near unexpected token `|'\n");
 			free_commands(first_cmd);
 			return (NULL);
 		}

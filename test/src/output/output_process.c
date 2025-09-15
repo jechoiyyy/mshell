@@ -7,9 +7,12 @@ int	output_process(t_shell *shell, t_prompt *prompt)
 
 	cmd = parse_tokens(prompt);
 	if (!cmd)
-		return (printf("Parsing failed\n"), FAILURE);
+		return (FAILURE);
 	if (execute_pipeline(cmd, shell) == FAILURE)
+	{
+		free_commands(cmd);
         return (FAILURE);
+	}
 	free_commands(cmd);
 	return (g_exit_status);
 }

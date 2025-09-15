@@ -62,7 +62,7 @@ void	print_error(char *cmd, char *msg)
 	{
 		write(STDERR_FILENO, "minishell: ", 11);
 		write(STDERR_FILENO, cmd, ft_strlen(cmd));
-		write(STDERR_FILENO, ": : ", 2);
+		write(STDERR_FILENO, ": ", 2);
 		write(STDERR_FILENO, msg, ft_strlen(msg));
 		write(STDERR_FILENO, "\n", 1);
 	}

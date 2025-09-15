@@ -6,22 +6,11 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:43:39 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/12 19:06:02 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:26:00 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
-
-static int	is_valid_command(t_cmd *cmd)
-{
-	if (cmd->args)
-		return (SUCCESS);
-	if (cmd->input_file->filename || cmd->output_file->filename)
-		return (SUCCESS);
-	if (cmd->hd != -1)
-		return (SUCCESS);
-	return (FAILURE);	
-}
 
 t_cmd	*parse_simple_command(t_token **current, t_prompt *prompt)
 {
@@ -50,12 +39,6 @@ t_cmd	*parse_simple_command(t_token **current, t_prompt *prompt)
 		else
 			break ;
 	}
-	if (is_valid_command(cmd) == FAILURE)
-	{
-		printf("minishell: syntax error near unexpected token\n");
-		free_commands(cmd);
-		return (NULL);
-	}
 	return (cmd);
 }
 
@@ -71,7 +54,6 @@ int	parse_redirections(t_token **current, t_cmd *cmd, t_prompt *prompt)
 						(*current)->type != T_CORRECT_FILNAME && \
 						(*current)->type != T_WRONG_FILNAME))
 	{
-		printf("minishell: syntax error near redirection\n");
 		return (FAILURE);
 	}
 	if (redir_type == T_REDIR_IN || redir_type == T_HEREDOC)
