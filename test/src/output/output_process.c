@@ -1,5 +1,4 @@
 #include "output.h"
-#include "print.h"
 
 int	output_process(t_shell *shell, t_prompt *prompt)
 {
