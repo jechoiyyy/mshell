@@ -54,8 +54,12 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "*.dbclient-js": "javascript",
     "*.sol": "solidity",
-    "sigft.h": "c"
+    "*.dbclient-js": "javascript",
+    "sigft.h": "c",
+    "stdlib.h": "c",
+    "output.h": "c",
+    "parser.h": "c",
+    "executor.h": "c"
   }
 }

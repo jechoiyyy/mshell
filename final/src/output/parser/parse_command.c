@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 21:43:39 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 01:03:10 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 12:55:28 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ int	parse_redirections(t_token **current, t_cmd *cmd, t_prompt *prompt)
 	if (redir_type == T_REDIR_IN || redir_type == T_HEREDOC)
 		set_input_file(cmd, *current, prompt, redir_type);
 	else if (redir_type == T_REDIR_OUT)
-		set_output_file(cmd, *current, 0);
+		set_output_file(cmd, *current, 0, redir_type);
 	else if (redir_type == T_APPEND)
-		set_output_file(cmd, *current, 1);
+		set_output_file(cmd, *current, 1, redir_type);
 	*current = (*current)->next;
 	return (SUCCESS);
 }

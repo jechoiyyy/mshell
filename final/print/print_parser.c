@@ -7,41 +7,62 @@ void print_filename(t_filename *filename, int index)
 {
     if (!filename)
     {
-        printf("  FILENAME[%d]: NULL\n", index);
+        printf("    FILENAME[%d]: NULL\n", index);
         return;
     }
     
-    printf("  FILENAME[%d]:\n", index);
-    printf("    filename: %s\n", filename->filename ? filename->filename : "NULL");
-    printf("    flag: %s\n", filename->flag ? "CORRECT" : "WRONG");
+    printf("    FILENAME[%d]:\n", index);
+    printf("      filename: %s\n", filename->filename ? filename->filename : "NULL");
+    printf("      flag: %s\n", filename->flag ? "WRONG" : "CORRECT");
+    printf("      append_mode: %d\n", filename->append_mode);
+    printf("      hd: %d\n", filename->hd);
 }
 
-void	print_file_list(t_filename *head, char *str)
+// t_file 리스트 출력 함수 (수정됨)
+void print_file_list(t_file *head, char *str)
 {
-	t_filename	*current;
-	int			index;
+    t_file *current;
+    int index;
 
-	if (!head)
-	{
-		printf("  %s list: EMPTY\n", str);
-		return ;
-	}
-	
-	printf("  %s list:\n", str);
-	current = head;
-	index = 0;
-	while (current)
-	{
-		printf("  [%d] filename: \"%s\", flag: %d (%s), append_mode: %d, hd: %d\n", 
-                index, 
-                current->filename ? current->filename : "NULL",
-                current->flag,
-                current->flag ? "WRONG" : "CORRECT", 
-                current->append_mode,
-                current->hd);
-		current = current->next;
-		index++;
-	}
+    if (!head)
+    {
+        printf("  %s list: EMPTY\n", str);
+        return;
+    }
+    
+    printf("  %s list:\n", str);
+    current = head;
+    index = 0;
+    
+    while (current)
+    {
+        printf("  [%d] t_file node:\n", index);
+        
+        // input_file 출력
+        if (current->input_file)
+        {
+            printf("    input_file:\n");
+            print_filename(current->input_file, 0);
+        }
+        else
+        {
+            printf("    input_file: NULL\n");
+        }
+        
+        // output_file 출력
+        if (current->output_file)
+        {
+            printf("    output_file:\n");
+            print_filename(current->output_file, 0);
+        }
+        else
+        {
+            printf("    output_file: NULL\n");
+        }
+        
+        current = current->next;
+        index++;
+    }
 }
 
 // 단일 cmd 구조체 출력 함수
@@ -67,17 +88,11 @@ void print_cmd(t_cmd *cmd, int index)
         printf("  ]\n");
     }
     
-// input_file 출력 (44번째 줄 근처)
-    if (cmd->input_file)
-        print_file_list(cmd->input_file, "input_file");
+    // file 리스트 출력 (수정됨)
+    if (cmd->file)
+        print_file_list(cmd->file, "file");
     else
-        printf("NULL\n");
-
-    // output_file 출력 (48번째 줄 근처)
-    if (cmd->output_file)
-        print_file_list(cmd->output_file, "output_file");
-    else
-        printf("NULL\n");
+        printf("  file list: NULL\n");
     
     // hd (파일 디스크립터) 출력
     printf("  hd (file descriptor): %d", cmd->hd);
@@ -124,7 +139,7 @@ void print_cmd_list(t_cmd *head)
     printf("====================================\n");
 }
 
-// 간단한 요약 출력 함수 (한 줄로)
+// 간단한 요약 출력 함수 (한 줄로) - 수정됨
 void print_cmd_summary(t_cmd *head)
 {
     if (!head)
@@ -142,8 +157,21 @@ void print_cmd_summary(t_cmd *head)
         printf("[%d]", index);
         if (current->args && current->args[0])
             printf("(%s)", current->args[0]);
-        if (current->input_file && current->input_file->filename)
-            printf("<");
+        
+        // t_file 리스트에서 입력/출력 파일 확인
+        if (current->file)
+        {
+            t_file *file_node = current->file;
+            while (file_node)
+            {
+                if (file_node->input_file)
+                    printf("<%s", file_node->input_file->filename ? file_node->input_file->filename : "?");
+                if (file_node->output_file)
+                    printf(">%s", file_node->output_file->filename ? file_node->output_file->filename : "?");
+                file_node = file_node->next;
+            }
+        }
+        
         if (current->hd > 2)  // 표준 fd가 아닌 경우
             printf("[fd:%d]", current->hd);
         

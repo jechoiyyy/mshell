@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 10:49:06 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 00:54:46 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 14:49:20 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,7 @@ t_cmd	*create_command(t_hd *hd_lst)
 	if (!cmd)
 		return (NULL);
 	cmd->args = NULL;
-	cmd->input_file = create_filename();
-	if (!cmd->input_file)
-		return (free(cmd), NULL);
-	cmd->output_file = create_filename();
-	if (!cmd->output_file)
-		return (free(cmd->input_file), free(cmd), NULL);
+	cmd->file = NULL;
 	cmd->next = NULL;
 	last = hd_lst;
 	if (last)
@@ -95,29 +90,45 @@ static void	free_args(char **args)
 	free(args);
 }
 
-void	free_commands(t_cmd *commands)
+static void free_file_list(t_file *file_head)
 {
-	t_cmd	*current;
-	t_cmd	*next;
+    t_file *current;
+    t_file *next;
+    
+    current = file_head;
+    while (current)
+    {
+        next = current->next;
+        if (current->input_file)
+        {
+            if (current->input_file->filename)
+                free(current->input_file->filename);
+            free(current->input_file);
+        }
+        if (current->output_file)
+        {
+            if (current->output_file->filename)
+                free(current->output_file->filename);
+            free(current->output_file);
+        }
+        free(current);
+        current = next;
+    }
+}
 
-	current = commands;
-	while (current)
-	{
-		next = current->next;
-		free_args(current->args);
-		if (current->input_file)
-		{
-			if (current->input_file->filename)
-				free(current->input_file->filename);
-			free(current->input_file);
-		}
-		if (current->output_file)
-		{
-			if (current->output_file->filename)
-				free(current->output_file->filename);
-			free(current->output_file);
-		}
-		free(current);
-		current = next;
-	}
+void free_commands(t_cmd *cmd)
+{
+    t_cmd *current;
+    t_cmd *next;
+    
+    current = cmd;
+    while (current)
+    {
+        next = current->next;
+        free_args(current->args);
+        if (current->file)
+            free_file_list(current->file);
+        free(current);
+        current = next;
+    }
 }

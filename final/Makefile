@@ -69,7 +69,7 @@ BUILTINS_SRC = export_print.c export_utils.c export_utils2.c ft_cd.c ft_echo.c f
 BUILTINS_LOC = $(addprefix $(BUILTINS_DIR)/, $(BUILTINS_SRC))
 
 EXECUTOR_DIR = $(OUTPUT_DIR)/executor
-EXECUTOR_SRC = exec_cmd.c exec_manage.c exec_pipe.c path_utils.c redirections.c
+EXECUTOR_SRC = exec_cmd.c exec_manage.c exec_pipe.c path_utils.c redirections.c single_cmd.c
 EXECUTOR_LOC = $(addprefix $(EXECUTOR_DIR)/, $(EXECUTOR_SRC))
 
 PARSER_DIR = $(OUTPUT_DIR)/parser

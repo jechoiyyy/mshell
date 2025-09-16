@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:01:35 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 00:56:18 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 12:49:16 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,33 @@ t_filename	*create_filename(void)
 	new->flag = 0;
 	new->append_mode = -1;
 	new->hd = -1;
-	new->next = NULL;
 	return (new);
 }
 
-static void	add_filename_to_list(t_filename **head, t_filename *new_node)
+static void	add_file_to_list(t_file **head, t_filename *new_filename, t_token_type redir)
 {
-	t_filename	*current;
+	t_file	*new_node;
+	t_file	*current;
 
-	if (!head || !new_node)
+	if (!head || !new_filename)
 		return ;
-	if ((*head)->filename == NULL)
+	new_node = ft_calloc(1, sizeof(t_file));
+	if (!new_node)
+		return ;
+	if (redir == T_REDIR_IN || redir == T_HEREDOC)
 	{
-		*head = new_node;
+		new_node->input_file = new_filename;
+		new_node->output_file = NULL;
+	}
+	if (redir == T_REDIR_OUT || redir == T_APPEND)
+	{
+		new_node->input_file = NULL;
+		new_node->output_file = new_filename;
+	}
+	new_node->next = NULL;
+	if (*head == NULL)
+	{
+		(*head) = new_node;
 		return ;
 	}
 	current = *head;
@@ -63,38 +77,34 @@ void	set_input_file(t_cmd *cmd, t_token *current,\
 		new_file->hd = -1;
 	new_file->filename = ft_strdup(current->value);
 	if (!new_file)
+	{
+		free(new_file);
 		return ;
+	}
 	if (current->type == T_WRONG_FILNAME)
 		new_file->flag = 1;
 	new_file->append_mode = -1;
-	add_filename_to_list(&(cmd->input_file), new_file);
+	add_file_to_list(&(cmd->file), new_file, redir_type);
 }
 
-void	set_output_file(t_cmd *cmd, t_token *current, int append)
+void	set_output_file(t_cmd *cmd, t_token *current, int append, t_token_type redir)
 {
 	t_filename	*new_file;
 
 	if (!cmd || !current || !current->value)
 		return ;
 	new_file = create_filename();
-	new_file->filename = ft_strdup(current->value);
 	if (!new_file)
 		return ;
+	new_file->filename = ft_strdup(current->value);
+	if (!new_file->filename)
+	{
+		free(new_file);
+		return ;
+	}
 	if (current->type == T_WRONG_FILNAME)
 		new_file->flag = 1;
 	new_file->append_mode = append;
 	new_file->hd = -1;
-	add_filename_to_list(&(cmd->output_file), new_file);
+	add_file_to_list(&(cmd->file), new_file, redir);
 }
-
-// void	set_heredoc_delimiter(t_cmd *cmd, char *delimiter)
-// {
-// 	if (!cmd || !delimiter)
-// 		return ;
-// 	if (cmd->heredoc_delimiter)
-// 		free(cmd->heredoc_delimiter);
-// 	cmd->heredoc_delimiter = malloc(ft_strlen(delimiter) + 1);
-// 	if (!cmd->heredoc_delimiter)
-// 		return ;
-// 	ft_strcpy(cmd->heredoc_delimiter, delimiter);
-// }

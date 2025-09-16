@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dsagong <dsagong@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 09:51:37 by dsagong           #+#    #+#             */
-/*   Updated: 2025/09/15 16:32:22 by dsagong          ###   ########.fr       */
+/*   Updated: 2025/09/16 14:13:40 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ char	*charjoin_and_free(char *s, char c);
 int		is_redirect_token(t_token_type type);
 char	*ft_strcpy(char *dest, const char *src);
 char	*ft_strncpy(char *dest, const char *src, size_t n);
+char	*ft_dirname(const char *path);
 char	*ft_strcat(char *dest, const char *src);
 
 int		init_shell(t_shell *shell);

@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 19:57:14 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 01:35:31 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 16:28:42 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int	fork_and_execute(t_cmd *cmd, t_shell *shell, int *pipe_fds,	\
 	if (pid == 0)
 	{
 		setup_child_process(cmd, pipe_fds, cmd_index, cmd_count);
-		if (setup_redirections(cmd, cmd_index, cmd_count) == FAILURE)
+		if (setup_redirections(cmd) == FAILURE)
 			exit (FAILURE);
 		if ((!cmd || !cmd->args || !cmd->args[0]) && cmd->hd == -1)
 			exit (FAILURE);
@@ -93,75 +93,6 @@ static void	cleanup_resources(int *pipe_fds, pid_t *pids, int cmd_count)
 	}
 	if (pids)
 		free(pids);
-}
-
-static int apply_redirections_in_parent(t_cmd *cmd, int *saved_stdin, int *saved_stdout)
-{
-
-    *saved_stdin  = -1;
-    *saved_stdout = -1;
-
-	if (cmd->output_file &&	cmd->output_file->filename && ft_strcmp(cmd->output_file->filename, "NULL") != 0)
-	{
-		*saved_stdout = dup(STDOUT_FILENO);
-	}
-	if ((cmd->input_file && cmd->input_file->filename && 
-		ft_strcmp(cmd->input_file->filename, "NULL") != 0) ||
-		(cmd->hd && cmd->hd != -1))
-	{
-		*saved_stdin = dup(STDIN_FILENO);
-	}
-    if (setup_redirections(cmd, 0, 1) == FAILURE)
-	{
-        if (*saved_stdout != -1)
-		{
-			dup2(*saved_stdout, STDOUT_FILENO);
-			close(*saved_stdout);
-			*saved_stdout = -1;
-		}
-        if (*saved_stdin  != -1) 
-		{
-			dup2(*saved_stdin,STDIN_FILENO);
-			close(*saved_stdin);
-			*saved_stdin  = -1;
-		}
-        return FAILURE;
-    }
-    return SUCCESS;
-}
-
-static void restore_stdio(int *saved_stdin, int *saved_stdout)
-{
-    if (*saved_stdout != -1) {
-        dup2(*saved_stdout, STDOUT_FILENO);
-        close(*saved_stdout);
-    }
-    if (*saved_stdin != -1) {
-        dup2(*saved_stdin, STDIN_FILENO);
-        close(*saved_stdin);
-    }
-}
-
-static int	single_cmd(t_cmd *commands, t_shell *shell)
-{
-	int saved_stdin;
-	int saved_stdout;
-
-	if (apply_redirections_in_parent(commands, &saved_stdin, &saved_stdout) == FAILURE)
-        return FAILURE;
-	if (commands->args && is_builtin_command(commands->args[0]))
-	{
-		g_exit_status = execute_builtin(commands, shell);
-		restore_stdio(&saved_stdin, &saved_stdout);
-		return (g_exit_status);
-	}
-	if (!commands->args)
-	{
-		g_exit_status = 0;
-		restore_stdio(&saved_stdin, &saved_stdout);
-		return (g_exit_status);
-	}
-	return (FAILURE);
 }
 
 int	execute_pipeline(t_cmd *commands, t_shell *shell)

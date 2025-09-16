@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 12:30:29 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/15 18:07:16 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 15:36:11 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@
 # define WRITE_END 1
 
 int		execute_pipeline(t_cmd *commands, t_shell *shell);
-//int		execute_command(t_cmd *cmd, t_shell *shell);
 int		execute_builtin(t_cmd *cmd, t_shell *shell);
 int		execute_external(t_cmd *cmd, t_shell *shell);
 char    *find_executable(char *command, t_shell *shell);
@@ -38,9 +37,10 @@ void	setup_child_process(t_cmd *cmd, int *pipe_fds, int cmd_index, int cmd_count
 void	setup_parent_process(int *pipe_fds, int cmd_index, int cmd_count);
 void	close_all_pipes(int *pipe_fds, int pipe_count);
 int		count_commands(t_cmd *cmd);
-int		setup_redirections(t_cmd *cmd, int cmd_index, int cmd_count);
+int		setup_redirections(t_cmd *cmd);
 int		open_input_file(char *filename);
 int		open_output_file(char *filename, int append_mode);
-//int		setup_heredoc(char *delimiter);
+int		input_file_process(t_file *file);
+int		single_cmd(t_cmd *commands, t_shell *shell);
 
 #endif

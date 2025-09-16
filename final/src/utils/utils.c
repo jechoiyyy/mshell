@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dsagong <dsagong@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 20:05:55 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/15 16:31:01 by dsagong          ###   ########.fr       */
+/*   Updated: 2025/09/16 14:14:47 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,35 @@ char	*ft_strcat(char *dest, const char *src)
 	}
 	dest[i] = '\0';
 	return (dest);
+}
+
+char	*ft_dirname(const char *path)
+{
+	char	*result;
+	char	*last_slash;
+	int		len;
+
+	if (!path || !*path)
+		return (ft_strdup("."));
+	result = ft_strdup(path);
+	if (!result)
+		return (NULL);
+	len = ft_strlen(result);
+	while (len > 1 && result[len - 1] == '/')
+	{
+		result[len - 1] = '\0';
+		len--;
+	}
+	if (ft_strcmp(result, "/") == 0)
+		return (result);
+	last_slash = ft_strrchr(result, '/');
+	if (!last_slash)
+		return (free(result), ft_strdup("."));
+	if (last_slash == result)
+	{
+		result[1] = '\0';
+		return (result);
+	}
+	*last_slash = '\0';
+	return (result);
 }
