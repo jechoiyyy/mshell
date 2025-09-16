@@ -12,6 +12,7 @@
 
 #include "executor.h"
 #include "utils.h"
+#include <sys/wait.h>
 
 
 // static int check_file_requirements(t_cmd *cmd)
@@ -159,24 +160,48 @@ static void restore_stdio(int *saved_stdin, int *saved_stdout)
 
 int	single_cmd(t_cmd *commands, t_shell *shell)
 {
+    pid_t pid;
     int saved_stdin = -1;
     int saved_stdout = -1;
 
-    if (apply_redirections_in_parent(commands, &saved_stdin, &saved_stdout) == FAILURE)
-    {
-        g_exit_status = 1;
-        return (g_exit_status);
-    }
+    // 빈 명령어 처리 (redirection만 있는 경우)
     if (!commands->args || !commands->args[0])
     {
+        if (apply_redirections_in_parent(commands, &saved_stdin, &saved_stdout) == FAILURE)
+        {
+            g_exit_status = 1;
+            return (g_exit_status);
+        }
         g_exit_status = 0;
         restore_stdio(&saved_stdin, &saved_stdout);
         return (g_exit_status);
     }
+
+    // builtin 명령어는 fork하여 자식에서 실행
     if (is_builtin_command(commands->args[0]))
     {
-        g_exit_status = execute_builtin(commands, shell);
-        restore_stdio(&saved_stdin, &saved_stdout);
+        pid = fork();
+        if (pid == -1)
+        {
+            perror("fork");
+            return (FAILURE);
+        }
+        if (pid == 0) // 자식 프로세스
+        {
+            if (setup_redirections(commands) == FAILURE)
+                exit(FAILURE);
+            g_exit_status = execute_builtin(commands, shell);
+            exit(g_exit_status);
+        }
+        else // 부모 프로세스
+        {
+            int status;
+            waitpid(pid, &status, 0);
+            if (WIFEXITED(status))
+                g_exit_status = WEXITSTATUS(status);
+            else
+                g_exit_status = 128 + WTERMSIG(status);
+        }
         return (g_exit_status);
     }
 	return (FAILURE);
