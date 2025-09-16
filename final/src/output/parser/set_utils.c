@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 11:01:35 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 12:49:16 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 17:05:59 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void	set_input_file(t_cmd *cmd, t_token *current,\
 	{
 		new_file->hd = hd_list->fd;
 		prompt->hd_lst = prompt->hd_lst->next;
+		free(hd_list);
 	}
 	else
 		new_file->hd = -1;

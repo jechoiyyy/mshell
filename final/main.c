@@ -16,7 +16,7 @@ int	main(int ac, char **av, char **envp)
 	t_shell		shell;
 
 	if (ac != 1 || !av || ready_minishell(&prompt, &shell, envp) == 0)
-		return (-1);
+		return (1);
 	while (!shell.exit_flag)
 	{
 		if (input_process(&prompt) == 0)
@@ -32,14 +32,12 @@ int	main(int ac, char **av, char **envp)
 		prompt.input = NULL;
 		clear_token_list(&prompt.token_lst);
 		clear_hd_list(&prompt.hd_lst);
+		printf("shell : %d\n", shell.exit_flag);
 	}
 	cleanup_shell(&shell);
-	if (prompt.token_lst || prompt.input)
-	{
-		free(prompt.input);
-		clear_token_list(&prompt.token_lst);
-		clear_envp_list(&prompt.envp_lst);
-		clear_hd_list(&prompt.hd_lst);
-	}
+	free(prompt.input);
+	clear_token_list(&prompt.token_lst);
+	clear_envp_list(&prompt.envp_lst);
+	clear_hd_list(&prompt.hd_lst);
 	return (g_exit_status);
 }

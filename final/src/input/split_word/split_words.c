@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split_words.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dsagong <dsagong@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 16:42:50 by dsagong           #+#    #+#             */
-/*   Updated: 2025/09/08 17:15:07 by dsagong          ###   ########.fr       */
+/*   Updated: 2025/09/16 17:07:08 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static int	process_word_token(t_token *curr, t_token **new_lst)
 	tmp = lexed;
 	while (tmp)
 	{
-		if (!add_new_token(new_lst, ft_strdup(tmp->value), tmp->type))
+		if (!add_new_token(new_lst, ft_strdup(tmp->value), T_WORD))
 		{
 			clear_token_list(&lexed);
 			clear_token_list(new_lst);

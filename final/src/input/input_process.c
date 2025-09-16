@@ -19,6 +19,7 @@
 #include "split_word.h"
 #include "remove.h"
 #include "herdoc.h"
+#include "global.h"
 
 //입력에 문자가 들어올때까지 계속 이 함수에서 입력받기
 int	get_user_input(t_prompt *prompt)
@@ -29,6 +30,7 @@ int	get_user_input(t_prompt *prompt)
 		if (!prompt->input)
 		{
 			printf("exit\n");
+			g_exit_status = 1;
 			return (0);
 		}
 		if (*prompt->input == '\0')

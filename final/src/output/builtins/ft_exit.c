@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 20:12:54 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 15:22:09 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 17:24:57 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,5 @@ int	ft_exit(t_cmd *cmd, t_shell *shell)
 		code = ft_atol(cmd->args[1]);
 	shell->exit_flag = 1;
 	g_exit_status = (int)(code % 256);
-	cleanup_shell(shell);
 	return (g_exit_status);
 }

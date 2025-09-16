@@ -6,7 +6,7 @@
 /*   By: jechoi <jechoi@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:48:35 by jechoi            #+#    #+#             */
-/*   Updated: 2025/09/16 16:12:48 by jechoi           ###   ########.fr       */
+/*   Updated: 2025/09/16 17:42:01 by jechoi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,7 @@ int	single_cmd(t_cmd *commands, t_shell *shell)
         restore_stdio(&saved_stdin, &saved_stdout);
         return (g_exit_status);
     }
+    // if (ft_strcmp(commands->args[0]))
 
     // builtin 명령어는 fork하여 자식에서 실행
     if (is_builtin_command(commands->args[0]))
