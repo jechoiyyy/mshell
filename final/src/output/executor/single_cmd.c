@@ -178,32 +178,49 @@ int	single_cmd(t_cmd *commands, t_shell *shell)
     }
     // if (ft_strcmp(commands->args[0]))
 
-    // builtin 명령어는 fork하여 자식에서 실행
+    // builtin 명령어 처리
     if (is_builtin_command(commands->args[0]))
     {
-        pid = fork();
-        if (pid == -1)
+        // cd와 exit은 부모에서 직접 실행해야 함
+        if (ft_strcmp(commands->args[0], "cd") == 0 ||
+            ft_strcmp(commands->args[0], "exit") == 0)
         {
-            perror("fork");
-            return (FAILURE);
-        }
-        if (pid == 0) // 자식 프로세스
-        {
-            if (setup_redirections(commands) == FAILURE)
-                exit(FAILURE);
+            if (apply_redirections_in_parent(commands, &saved_stdin, &saved_stdout) == FAILURE)
+            {
+                g_exit_status = 1;
+                return (g_exit_status);
+            }
             g_exit_status = execute_builtin(commands, shell);
-            exit(g_exit_status);
+            restore_stdio(&saved_stdin, &saved_stdout);
+            return (g_exit_status);
         }
-        else // 부모 프로세스
+        // 나머지 builtin은 자식에서 실행
+        else
         {
-            int status;
-            waitpid(pid, &status, 0);
-            if (WIFEXITED(status))
-                g_exit_status = WEXITSTATUS(status);
-            else
-                g_exit_status = 128 + WTERMSIG(status);
+            pid = fork();
+            if (pid == -1)
+            {
+                perror("fork");
+                return (FAILURE);
+            }
+            if (pid == 0) // 자식 프로세스
+            {
+                if (setup_redirections(commands) == FAILURE)
+                    exit(FAILURE);
+                g_exit_status = execute_builtin(commands, shell);
+                exit(g_exit_status);
+            }
+            else // 부모 프로세스
+            {
+                int status;
+                waitpid(pid, &status, 0);
+                if (WIFEXITED(status))
+                    g_exit_status = WEXITSTATUS(status);
+                else
+                    g_exit_status = 128 + WTERMSIG(status);
+            }
+            return (g_exit_status);
         }
-        return (g_exit_status);
     }
 	return (FAILURE);
 }
